@@ -13,6 +13,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieSession({
   name: 'session',
   secret: 'Alan',
+  // Some cookie options
   maxAge: 24 * 60 * 60 * 1000
 }));
 
@@ -36,6 +37,10 @@ const users = {
   }
 };
 
+// Get Routes
+
+// Reoute renders create URL
+
 app.get("/urls/new", (req, res) => {
   let id = req.session.user_id;
   if (id) {
@@ -46,6 +51,8 @@ app.get("/urls/new", (req, res) => {
     res.redirect("/login");
   }
 });
+
+// Route renders the page for logged in users new short URL
 
 app.get("/urls/:shortURL", (req, res) => {
   let id = req.session.user_id;
@@ -66,6 +73,8 @@ app.get("/urls/:shortURL", (req, res) => {
   }
 });
 
+// Hyperlink to long URL page
+
 app.get("/u/:shortURL", (req, res) => {
   let shortURL =  req.params.shortURL;
   if (urlDatabase[shortURL]) {
@@ -76,6 +85,8 @@ app.get("/u/:shortURL", (req, res) => {
   }
 });
 
+// Rengers login page for user
+
 app.get("/login", (req, res) => {
   let id = req.session.user_id;
   let user = users[id];
@@ -83,12 +94,16 @@ app.get("/login", (req, res) => {
   res.render("urls_login", templateVars);
 });
 
+// Renders registration page for user
+
 app.get("/register", (req, res) => {
   let id = req.session.user_id;
   let user = users[id];
   let templateVars = { user };
   res.render("urls_registration", templateVars);
 });
+
+// Rengers urls page for a logged in user
 
 app.get("/urls", (req, res) => {
   let id = req.session.user_id;
@@ -102,6 +117,8 @@ app.get("/urls", (req, res) => {
   }
 });
 
+// Home route which depending if user is logged in, to either urls or login
+
 app.get("/", (req, res) => {
   let id = req.session.user_id;
   if (id) {
@@ -111,9 +128,15 @@ app.get("/", (req, res) => {
   }
 });
 
+// Database to JSON object
+
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
+
+// Post routes
+
+// Deletes logged in user
 
 app.post("/urls/:shortURL/delete", (req, res) => {
   let id = req.session.user_id;
@@ -132,6 +155,8 @@ app.post("/urls/:shortURL/delete", (req, res) => {
     res.send("This URL does not belong to you! Please go back and login in!");
   }
 });
+
+// Edits logged in users long URL, redirects to home page
 
 app.post("/urls/:shortURL", (req, res) => {
   let id = req.session.user_id;
@@ -152,6 +177,8 @@ app.post("/urls/:shortURL", (req, res) => {
   }
 });
 
+// Checks user email/password are correct before log in
+
 app.post("/login", (req, res) => {
   let userEmail = req.body.email;
   let userPassword = req.body.password;
@@ -168,10 +195,14 @@ app.post("/login", (req, res) => {
   }
 });
 
+// Logs user out and deletes cookie
+
 app.post("/logout", (req, res) => {
   req.session = null;
   res.redirect("/urls");
 });
+
+// Registers user and checks if log in info already exists, if not, creates new
 
 app.post("/register", (req, res) => {
   let userId = generateRandomString();
@@ -191,6 +222,8 @@ app.post("/register", (req, res) => {
   res.redirect("/urls");
 });
 
+// If user is logged in, redirects to chosen short URL page
+
 app.post("/urls", (req, res) => {
   let id = req.session.user_id;
   if (id) {
@@ -202,6 +235,8 @@ app.post("/urls", (req, res) => {
     res.send("Please go back and Login first!");
   }
 });
+
+// Sets message when server connects to PORT
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
