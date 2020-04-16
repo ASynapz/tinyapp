@@ -1,16 +1,15 @@
 const express = require("express");
+const cookieSession = require('cookie-session');
+const bcrypt = require('bcrypt');
+const bodyParser = require("body-parser");
+const PORT = 8080;
 
 const app = express();
-const PORT = 8080;
 
 app.set("view engine", "ejs");
 
-const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 
-const bcrypt = require('bcrypt');
-
-const cookieSession = require('cookie-session');
 app.use(cookieSession({
   name: 'session',
   secret: 'Alan',
@@ -154,7 +153,6 @@ app.post("/urls/:shortURL", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-
   let userEmail = req.body.email;
   let userPassword = req.body.password;
   let userObject = (findUserEmail(userEmail, users));
